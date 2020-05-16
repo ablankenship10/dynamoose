@@ -37,6 +37,7 @@ export interface ModelOptions {
 	waitForActive: ModelWaitForActiveSettings;
 	update: boolean | ModelUpdateOptions[];
 	expires?: number | ModelExpiresSettings;
+	returnSavedDocument: boolean;
 }
 export type ModelOptionsOptional = Partial<ModelOptions>;
 

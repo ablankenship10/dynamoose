@@ -16,6 +16,7 @@ export const original: ModelOptions = {
 		}
 	},
 	"update": false,
+	returnSavedDocument: false,
 	// "streamOptions": {
 	// 	"enabled": false,
 	// 	"type": undefined

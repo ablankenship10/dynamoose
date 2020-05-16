@@ -113,6 +113,7 @@ export class Document {
 		}
 
 		const localSettings: DocumentSaveSettings = settings;
+		let savedDocumentProperties: any = null;
 		const paramsPromise = this.toDynamo({"defaults": true, "validate": true, "required": true, "enum": true, "forceDefault": true, "saveUnknown": true, "customTypesDynamo": true, "updateTimestamps": true, "modifiers": ["set"]}).then((item) => {
 			const putItemObj: DynamoDB.PutItemInput = {
 				"Item": item,
@@ -123,7 +124,7 @@ export class Document {
 				putItemObj.ConditionExpression = "attribute_not_exists(#__hash_key)";
 				putItemObj.ExpressionAttributeNames = {"#__hash_key": this.model.schema.getHashKey()};
 			}
-
+			savedDocumentProperties = Document.fromDynamo(item);
 			return putItemObj;
 		});
 		if (settings.return === "request") {
@@ -146,8 +147,10 @@ export class Document {
 		} else {
 			return (async (): Promise<Document> => {
 				await promise;
+				const savedDocument = new this.model.Document(savedDocumentProperties);
+				savedDocument[internalProperties].storedInDynamo = true;
 				this[internalProperties].storedInDynamo = true;
-				return this;
+				return this.model.options.returnSavedDocument ? savedDocument : this;
 			})();
 		}
 	}
